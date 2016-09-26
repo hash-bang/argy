@@ -106,20 +106,33 @@ function Argy(args) {
 		var i = 0;
 		var out = [];
 		while(1) {
-			var argType = typeof args[i];
-			if (argType == 'undefined') {
-				break;
-			} else if (argType == 'object' && Object.prototype.toString.call(args[i]) == '[object Array]') { // Special case for arrays being classed as objects
-				argType = 'array';
-			} else if (argType == 'object' && Object.prototype.toString.call(args[i]) == '[object Date]') {
-				argType = 'date';
-			} else if (args[i] === null) {
-				argType = 'null';
-			}
+			var argType = self.getType(args[i]);
+			if (argType == 'undefined') break;
 			out.push(argType);
 			i++;
 		}
 		return out.toString();
+	};
+
+	/**
+	* Return the type of a single variable as a lower case string
+	* This is really just an augmented version of the built in `typeof` with extra functionality to recognise arrays
+	* @param {mixed} arg The variable to analyse
+	* @return {string} The type of the variable as a lower case string
+	*/
+	self.getType = function(arg) {
+		var argType = typeof arg;
+		if (argType == 'undefined') {
+			return 'undefined';
+		} else if (argType == 'object' && Object.prototype.toString.call(arg) == '[object Array]') { // Special case for arrays being classed as objects
+			return 'array';
+		} else if (argType == 'object' && Object.prototype.toString.call(arg) == '[object Date]') {
+			return 'date';
+		} else if (arg === null) {
+			return 'null';
+		} else {
+			return argType;
+		}
 	};
 
 	// isForm() / isFormElse() {{{
@@ -145,7 +158,7 @@ function Argy(args) {
 		if (
 			(typeof form == 'string' && form == self.computedForm) // Simple single rule match
 			||
-			(self.getForm([form]) == 'array' && form.some(match => self.computedForm == match)) // Any item in array rule match
+			(self.getType(form) == 'array' && form.some(match => self.computedForm == match)) // Any item in array rule match
 		) {
 			self.matchedForm = true;
 			callback.apply(this, self.args);
