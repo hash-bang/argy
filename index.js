@@ -95,12 +95,9 @@ function Argy(args) {
 
 			var args = self.stack.map((arg, offset) => (Math.pow(2, offset) & i) > 0 ? self.stack[offset] : null)
 
-			if (filterMatchers && !args.every((arg, i) => {
-				if (!self.args[i]) return false; // Argument doesnt exist to compare against
-				console.log('CHK', i);
-				return true;
-			})) continue;
-				
+			// Reject if the argument doesnt exist or the argument fails to satisfy the matcher
+			if (filterMatchers && !args.every((arg, i) => self.args[i] && arg.matcher.call(self, self.args[i]))) continue;
+
 			out[i] = true;
 		}
 
