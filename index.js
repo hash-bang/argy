@@ -50,7 +50,7 @@ function Argy(args) {
 				break;
 			case 'optional':
 				self.stack.push({
-					cardinality: 'required',
+					cardinality: 'optional',
 					ref: ref,
 					matcher: self._getMatcherFunction(matcher),
 				});
@@ -61,24 +61,34 @@ function Argy(args) {
 		return self;
 	};
 
-	self.signature = function() {
-		var walkSig = function(args, heap) {
-			var thisArg = args.shift();
+	/**
+	* Shorthand function to create a stack
+	* This is an alternative way to call add() / required() / optional()
+	* e.g. argy(arguments).as('number [string] [function]') is the same as argy(arguments).required('number').optional('string').optional('function')
+	* @param {string} pattern Pattern to process. Ooptional parameters are speciifed in square brackets
+	* @return {Object} this chainable object
+	*/
+	self.as = function(pattern) {
+		pattern
+			.split(/[\s+,]+/)
+			.forEach(function(arg) {
+				if (/^\[.*\]$/.test(arg)) {
+					self.add('optional', null, arg.substr(1, arg.length - 2));
+				} else {
+					self.add('required', null, arg);
+				}
+			});
 
-			if (thisSig.cardinality == 'required') {
-				heap.push({
-					matcher: thisArg.matcher,
-				});
-			}
-		};
-
-		var sig = [];
-
-		walkSig(_.clone(self.stack), sig);
-
-		return sig;
+		return this;
 	};
 
+
+	/**
+	* Cached string of the arguments object run via getForm()
+	* This is to prevent multiple scans of the arg object when being used by a function that hits it a lot such as ifForm()
+	* @var {string}
+	* @see ifForm()
+	*/
 	self.computedForm = undefined;
 
 	/**
@@ -89,8 +99,8 @@ function Argy(args) {
 	*	test(function() {}, 1) // 'function,number'
 	*	test('hello', 123, {foo: 'bar'}, ['baz'], [{quz: 'quzValue'}, {quuz: 'quuzValue'}]) // 'string,number,object,array,collection'
 	*
-	* @param object args The special JavaScript 'arguments' object
-	* @return string CSV of all passed arguments
+	* @param {object} args The special JavaScript 'arguments' object
+	* @return {string} CSV of all passed arguments
 	*/
 	self.getForm = function(args) {
 		var i = 0;

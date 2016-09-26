@@ -2,6 +2,11 @@ Argy
 ====
 Swiss army knife for variadic functions.
 
+Argy can be used in multiple ways:
+
+* Matching against a argument form with ifForm() / ifFormElse()
+* Matching against a stated pattern with as()
+
 
 API
 ===
@@ -36,3 +41,15 @@ identify() // "Unknown"
 ```
 
 See the [test/ifForm.js](tests) for more complex examples.
+
+
+as()
+====
+The `as()` method is a shorthand version of the `add()` / `required()` / `optional()` methods.
+
+'As' syntax resembles a string (either space seperated or CSV) of types with optional types in square brackets:
+
+```javascript
+argy(arguments).as('number').into(myNumber) // Require a single number
+argy(arguments).as('*').into(myNumber) // Require any type
+```
