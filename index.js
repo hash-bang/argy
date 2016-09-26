@@ -27,11 +27,11 @@ function Argy(args) {
 			} else if (_.isString(i)) {
 				switch (i) {
 					case '*': return function() { return true };
-					case 'string': return _.isString;
-					case 'number': return _.isNumber;
-					case 'boolean': return _.isBoolean;
-					case 'object': return _.isObject;
-					case 'function': return _.isFunction;
+					case 'string': return function(a) { return self.isType(a, 'string') };
+					case 'number': return function(a) { return self.isType(a, 'number') };
+					case 'boolean': return function(a) { return self.isType(a, 'boolean') };
+					case 'object': return function(a) { return self.isType(a, 'object') };
+					case 'function': return function(a) { return self.isType(a, 'function') };
 				}
 			} else {
 				throw new Error('Unable to determine what to do with Argy matcher of type "' + i + '"');
@@ -80,6 +80,44 @@ function Argy(args) {
 			});
 
 		return this;
+	};
+
+	/**
+	* Compile a truth table from the current stack contents
+	* @param {boolean} [applyRequired=true] Whether to reduce the truth table by removing any element not satisfying the required fields
+	* @param {boolean} [applyMatchers=true] Whether to further reduce the truth table by filtering out non-matching elements (type matching)
+	* @return {Object} A truth table with each key as a possible value
+	*/
+	self.parseTruth = function(applyRequired, applyMatchers) {
+		var maxVal = Math.pow(2, self.stack.length);
+		var out = {};
+
+		var filterRequired = applyRequired === undefined ? true : !!applyRequired;
+		var filterMatchers = applyMatchers === undefined ? true : !!applyMatchers;
+
+		// Calculate the bit mask (+2^offset for every required element)
+		var mask = self.stack.reduce((total, arg, offset) => arg.cardinality == 'required' ? total + Math.pow(2, offset) : total, 0);
+
+		for (var i = 0; i < maxVal; i++) {
+			if (filterRequired && (i & mask) != mask) continue; // Doesn't satisfy require bitmask
+
+			var args = self.stack.map((arg, offset) => (Math.pow(2, offset) & i) > 0 ? self.stack[offset] : null)
+
+			if (filterMatchers && !args.every((arg, i) => {
+				if (!self.args[i]) return false; // Argument doesnt exist to compare against
+				console.log('CHK', i);
+				return true;
+			})) continue;
+				
+			out[i] = true;
+		}
+
+		return out;
+	};
+
+
+	self.parse = function() {
+		var truth = self.parseTruth();
 	};
 
 
@@ -133,6 +171,16 @@ function Argy(args) {
 		} else {
 			return argType;
 		}
+	};
+
+	/**
+	* Convenience function to compare an incoming variable with a return of getType()
+	* @param {mixed} arg The variable being analysed
+	* @param {string} typeCompare The return of getType to compare to
+	* @return {boolean} Boolean if arg is of the typeCompare type
+	*/
+	self.isType = function(arg, typeCompare) {
+		return self.getType(arg) == typeCompare;
 	};
 
 	// isForm() / isFormElse() {{{
