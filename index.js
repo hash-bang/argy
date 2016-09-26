@@ -18,25 +18,17 @@ function Argy(args) {
 	self.require = self.required; // Alias
 
 	self._getMatcherFunction = function(item) {
-		// Coerce into an array if its not already
-		if (!_.isArray(item)) item = [item];
-
-		return _.map(item, function(i) {
-			if (_.isUndefined(i)) {
-				return function() { return true };
-			} else if (_.isString(i)) {
-				switch (i) {
-					case '*': return function() { return true };
-					case 'string': return function(a) { return self.isType(a, 'string') };
-					case 'number': return function(a) { return self.isType(a, 'number') };
-					case 'boolean': return function(a) { return self.isType(a, 'boolean') };
-					case 'object': return function(a) { return self.isType(a, 'object') };
-					case 'function': return function(a) { return self.isType(a, 'function') };
-				}
-			} else {
-				throw new Error('Unable to determine what to do with Argy matcher of type "' + i + '"');
-			}
-		});
+		switch (item) {
+			case '*': return function() { return true };
+			case 'string': return function(a) { return self.isType(a, 'string') };
+			case 'number': return function(a) { return self.isType(a, 'number') };
+			case 'boolean': return function(a) { return self.isType(a, 'boolean') };
+			case 'object': return function(a) { return self.isType(a, 'object') };
+			case 'function': return function(a) { return self.isType(a, 'function') };
+			case 'date': return function(a) { return self.isType(a, 'date') };
+			default:
+				throw new Error('Unable to determine what to do with Argy matcher of type "' + item + '"');
+		}
 	};
 
 	self.add = function(cardinality, ref, matcher) {
