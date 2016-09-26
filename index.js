@@ -3,7 +3,7 @@ var _ = require('lodash');
 function Argy(args) {
 	var self = this;
 
-	self.args = args;
+	self.args = args || [];
 
 	self.stack = [];
 
