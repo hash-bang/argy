@@ -18,7 +18,7 @@ function Argy(args) {
 	self.require = self.required; // Alias
 
 	self._getMatcherFunction = function(item) {
-		// Coherce into an array if its not already
+		// Coerce into an array if its not already
 		if (!_.isArray(item)) item = [item];
 
 		return _.map(item, function(i) {
@@ -65,7 +65,7 @@ function Argy(args) {
 	* Shorthand function to create a stack
 	* This is an alternative way to call add() / required() / optional()
 	* e.g. argy(arguments).as('number [string] [function]') is the same as argy(arguments).required('number').optional('string').optional('function')
-	* @param {string} pattern Pattern to process. Ooptional parameters are speciifed in square brackets
+	* @param {string} pattern Pattern to process. Optional parameters are specified in square brackets
 	* @return {Object} this chainable object
 	*/
 	self.as = function(pattern) {
@@ -169,7 +169,7 @@ function Argy(args) {
 
 
 	/**
-	* Bind a non-matching ifForm condition that is fired if none of the preceeding conditions were satisfied
+	* Bind a non-matching ifForm condition that is fired if none of the preceding conditions were satisfied
 	* @param {function} callback The callback to call if the form matches
 	* @return {Object} this chainable object
 	* @see GetForm()
