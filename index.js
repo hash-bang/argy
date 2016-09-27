@@ -95,18 +95,75 @@ function Argy(args) {
 
 			var args = self.stack.map((arg, offset) => (Math.pow(2, offset) & i) > 0 ? self.stack[offset] : null)
 
-			// Reject if the argument doesnt exist or the argument fails to satisfy the matcher
-			if (filterMatchers && !args.every((arg, i) => self.args[i] && arg.matcher.call(self, self.args[i]))) continue;
+			// Calculate the argValues array (the args to actually pass to the function) {{{
+			var argValues = [];
+			var stackPointer = 0;
+			var argPointer = 0;
+			var argsValid = true;
+			while (argPointer < self.args.length - 1) {
+				// Is undefined? {{{
+				if (self.args[argPointer] === undefined) {
+					if (self.args[argPointer].cardinality == 'required') {
+						argsValid = false;
+						break;
+					} else {
+						argValues.push(self.args[argPointer++]);
+						stackPointer++;
+					}
+				}
+				// }}}
 
-			out[i] = true;
+				// Satisfies matcher? {{{
+				if (self.stack[stackPointer].matcher.call(self, self.args[argPointer])) {
+					argValues.push(self.args[argPointer++]);
+					stackPointer++;
+				} else if (self.stack[stackPointer].cardinality == 'required') {
+					argsValid = false;
+					break;
+				} else {
+					argValues.push(undefined);
+					stackPointer++;
+				}
+				// }}}
+			}
+			// }}}
+
+			if (filterMatchers && !argsValid) continue;
+
+			out[i] = {
+				values: argValues,
+				satisfies: {
+					required: (i & mask) == mask,
+					matchers: argsValid,
+				},
+			};
 		}
 
 		return out;
 	};
 
 
-	self.parse = function() {
+	/**
+	* Calculate the parse truth table to use and optionally assign a list of variable to their incomming arg values in order
+	* This is an alternate way of reading back values contrasting with the first parameter of add() / optional() / required()
+	* @param {mixed,...} arg The arguments to read back - this should approximately match the number of args in the stack any overflow values will be assigned as undefined
+	* @return {Object} this chainable object
+	*/
+	self.parse = function(xargs) {
 		var truth = self.parseTruth();
+
+		var truthKeys = Object.keys(truth);
+		if (truthKeys.length == 0) throw new Error('Invalid function invocation');
+		// if (truthKeys.length > 1) throw new Error('Multiple matching rules for variadic function!');
+
+		var useTruth = truth[truthKeys[0]];
+
+		useTruth.values.forEach(function(ref, i) {
+			console.log('SET', i, 'TO', ref);
+			self.args[i] = ref;
+		});
+
+		return self;
 	};
 
 
