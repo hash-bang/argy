@@ -1,5 +1,6 @@
 var _ = require('lodash');
 
+// Main object {{{
 function Argy(args) {
 	var self = this;
 
@@ -167,65 +168,6 @@ function Argy(args) {
 	*/
 	self.computedForm = undefined;
 
-	/**
-	* Examines an argument stack and returns all passed arguments as a CSV
-	* e.g.
-	*	function test () { getOverload(arguments) };
-	*	test('hello', 'world') // 'string,string'
-	*	test(function() {}, 1) // 'function,number'
-	*	test('hello', 123, {foo: 'bar'}, ['baz'], [{quz: 'quzValue'}, {quuz: 'quuzValue'}]) // 'string,number,object,array,collection'
-	*
-	* @param {object} args The special JavaScript 'arguments' object
-	* @return {string} CSV of all passed arguments
-	*/
-	self.getForm = function(args) {
-		var i = 0;
-		var out = [];
-		while(1) {
-			var argType = self.getType(args[i]);
-			if (argType == 'undefined') break;
-			out.push(argType);
-			i++;
-		}
-		return out.toString();
-	};
-
-	/**
-	* Return the type of a single variable as a lower case string
-	* This is really just an augmented version of the built in `typeof` with extra functionality to recognise arrays
-	* @param {mixed} arg The variable to analyse
-	* @return {string} The type of the variable as a lower case string
-	*/
-	self.getType = function(arg) {
-		var argType = typeof arg;
-		if (argType == 'undefined') {
-			return 'undefined';
-		} else if (argType == 'object' && Object.prototype.toString.call(arg) == '[object Array]') { // Special case for arrays being classed as objects
-			return 'array';
-		} else if (argType == 'object' && Object.prototype.toString.call(arg) == '[object Date]') {
-			return 'date';
-		} else if (arg === null) {
-			return 'null';
-		} else {
-			return argType;
-		}
-	};
-
-	/**
-	* Convenience function to compare an incoming variable with a return of getType()
-	* @param {mixed} arg The variable being analysed
-	* @param {string|array} typeCompare The return of getType to compare to. If an array is passed this function will return true if the type is any of its contents
-	* @return {boolean} Boolean if arg is of the typeCompare type
-	*/
-	self.isType = function(arg, typeCompare) {
-		if (self.getType(typeCompare) == 'array') {
-			var isType = self.getType(arg);
-			return typeCompare.some(function(t) { return t == isType });
-		} else {
-			return self.getType(arg) == typeCompare;
-		}
-	};
-
 	// isForm() / isFormElse() {{{
 	/**
 	* Whether any ifForm() rule has matched in this object so far
@@ -244,12 +186,12 @@ function Argy(args) {
 	* @see ifFormElse()
 	*/
 	self.ifForm = function(form, callback) {
-		if (!self.computedForm) self.computedForm = self.getForm(self.args);
+		if (!self.computedForm) self.computedForm = Argy.getForm(self.args);
 
 		if (
 			(typeof form == 'string' && form == self.computedForm) // Simple single rule match
 			||
-			(self.getType(form) == 'array' && form.some(match => self.computedForm == match)) // Any item in array rule match
+			(Argy.getType(form) == 'array' && form.some(match => self.computedForm == match)) // Any item in array rule match
 		) {
 			self.matchedForm = true;
 			callback.apply(this, self.args);
@@ -288,5 +230,92 @@ function Argy(args) {
 
 	return self;
 }
+// }}}
+
+// Utility functions {{{
+/**
+* Examines an argument stack and returns all passed arguments as a CSV
+* e.g.
+*	function test () { getOverload(arguments) };
+*	test('hello', 'world') // 'string,string'
+*	test(function() {}, 1) // 'function,number'
+*	test('hello', 123, {foo: 'bar'}, ['baz'], [{quz: 'quzValue'}, {quuz: 'quuzValue'}]) // 'string,number,object,array,collection'
+*
+* @param {object} args The special JavaScript 'arguments' object
+* @return {string} CSV of all passed arguments
+*/
+Argy.getForm = function(args) {
+	var i = 0;
+	var out = [];
+	while(1) {
+		var argType = Argy.getType(args[i]);
+		if (argType == 'undefined') break;
+		out.push(argType);
+		i++;
+	}
+	return out.toString();
+};
+
+/**
+* Return the type of a single variable as a lower case string
+* This is really just an augmented version of the built in `typeof` with extra functionality to recognise arrays
+* @param {mixed} arg The variable to analyse
+* @return {string} The type of the variable as a lower case string
+*/
+Argy.getType = function(arg) {
+	var argType = typeof arg;
+	if (argType == 'undefined') {
+		return 'undefined';
+	} else if (argType == 'object' && Object.prototype.toString.call(arg) == '[object Array]') { // Special case for arrays being classed as objects
+		return 'array';
+	} else if (argType == 'object' && Object.prototype.toString.call(arg) == '[object Date]') {
+		return 'date';
+	} else if (arg === null) {
+		return 'null';
+	} else {
+		return argType;
+	}
+};
+
+/**
+* Convenience function to compare an incoming variable with a return of getType()
+*
+* Additional types compared:
+* 	- '*' / 'any' = Anything (will always return true)
+* 	- 'scalar' / 'basic' = Any number / string type
+*	- 'ok' / 'truey' = Any value that equates to a truey approximation
+*	- 'notok' / 'falsy' = Any value that equates to a falsy approximation
+*
+* @param {mixed} arg The variable being analysed
+* @param {string|array} typeCompare The return of getType to compare to. If an array is passed this function will return true if the type is any of its contents. All values are automatically lower cased
+* @return {boolean} Boolean if arg is of the typeCompare type
+*/
+Argy.isType = function(arg, typeCompare) {
+	if (Argy.getType(typeCompare) != 'array') typeCompare = [typeCompare]; // Force comparitor to be an array
+
+	var gotType = Argy.getType(arg);
+
+	return typeCompare.some(function(comparitor) {
+		comparitor = comparitor.toLowerCase();
+		switch (comparitor) {
+			case '*':
+			case 'any':
+				return true;
+			case 'scalar':
+			case 'basic':
+				return (gotType == 'number' || gotType == 'string');
+			case 'ok':
+			case 'truey':
+				return (gotType != 'null' && gotType != 'undefined');
+			case 'notok':
+			case 'falsy':
+				return (gotType == 'null' || gotType == 'undefined');
+			default:
+				return gotType == comparitor;
+		}
+		return t == isType
+	});
+};
+// }}}
 
 module.exports = Argy;
