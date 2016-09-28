@@ -31,14 +31,63 @@ describe('argy().isType()', function() {
 	});
 
 	it('should identify arrays of types', function() {
-		expect(argy().isType(function() { }, ['string', 'function'])).to.be.true;
-		expect(argy().isType(123, ['number', 'string'])).to.be.true;
-		expect(argy().isType('abc', ['string'])).to.be.true;
-		expect(argy().isType(new Date, ['date', 'function'])).to.be.true;
-		expect(argy().isType({foo: 'foo'}, ['object', 'undefined'])).to.be.true;
-		expect(argy().isType([1,2,3], ['array', 'object'])).to.be.true;
-		expect(argy().isType(null, ['null', 'boolean', 'undefined'])).to.be.true;
-		expect(argy().isType(undefined, ['null', 'undefined'])).to.be.true;
+		expect(argy.isType(function() { }, ['string', 'function'])).to.be.true;
+		expect(argy.isType(123, ['number', 'string'])).to.be.true;
+		expect(argy.isType('abc', ['string'])).to.be.true;
+		expect(argy.isType(new Date, ['date', 'function'])).to.be.true;
+		expect(argy.isType({foo: 'foo'}, ['object', 'undefined'])).to.be.true;
+		expect(argy.isType([1,2,3], ['array', 'object'])).to.be.true;
+		expect(argy.isType(null, ['null', 'boolean', 'undefined'])).to.be.true;
+		expect(argy.isType(undefined, ['null', 'undefined'])).to.be.true;
+	});
+
+});
+
+
+describe('argy().isType() - meta types', function() {
+
+	it('should identify \'any\' values', function() {
+		expect(argy.isType(function() { }, 'any')).to.be.true;
+		expect(argy.isType(123, '*')).to.be.true;
+		expect(argy.isType('abc', 'any')).to.be.true;
+		expect(argy.isType(new Date, 'any')).to.be.true;
+		expect(argy.isType({foo: 'foo'}, '*')).to.be.true;
+		expect(argy.isType([1,2,3], '*')).to.be.true;
+		expect(argy.isType(null, '*')).to.be.true;
+		expect(argy.isType(undefined, 'any')).to.be.true;
+	});
+
+	it('should identify truey values', function() {
+		expect(argy.isType(function() { }, 'truey')).to.be.true;
+		expect(argy.isType(123, 'ok')).to.be.true;
+		expect(argy.isType('abc', 'truey')).to.be.true;
+		expect(argy.isType(new Date, 'truey')).to.be.true;
+		expect(argy.isType({foo: 'foo'}, 'ok')).to.be.true;
+		expect(argy.isType([1,2,3], 'ok')).to.be.true;
+		expect(argy.isType(null, 'ok')).to.be.false;
+		expect(argy.isType(undefined, 'truey')).to.be.false;
+	});
+
+	it('should identify falsy values', function() {
+		expect(argy.isType(function() { }, 'notok')).to.be.false;
+		expect(argy.isType(123, 'falsy')).to.be.false;
+		expect(argy.isType('abc', 'notok')).to.be.false;
+		expect(argy.isType(new Date, 'notok')).to.be.false;
+		expect(argy.isType({foo: 'foo'}, 'falsy')).to.be.false;
+		expect(argy.isType([1,2,3], 'falsy')).to.be.false;
+		expect(argy.isType(null, 'falsy')).to.be.true;
+		expect(argy.isType(undefined, 'notok')).to.be.true;
+	});
+
+	it('should identify scalar values', function() {
+		expect(argy.isType(function() { }, 'scalar')).to.be.false;
+		expect(argy.isType(123, 'scalar')).to.be.true;
+		expect(argy.isType('abc', 'scalar')).to.be.true;
+		expect(argy.isType(new Date, 'scalar')).to.be.false;
+		expect(argy.isType({foo: 'foo'}, 'scalar')).to.be.false;
+		expect(argy.isType([1,2,3], 'scalar')).to.be.false;
+		expect(argy.isType(null, 'scalar')).to.be.false;
+		expect(argy.isType(undefined, 'scalar')).to.be.false;
 	});
 
 });

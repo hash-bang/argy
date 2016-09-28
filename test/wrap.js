@@ -14,8 +14,8 @@ describe('argy.wrap()', function() {
 		expect(identify()).to.deep.equal([undefined, undefined]);
 	});
 
-	it('should process basic scenarios #2', function() {
-		var petLister = argy().as('[string] [string|array]').wrap(function() {
+	it.skip('should process basic scenarios #2', function() {
+		var petLister = argy().as('[string] [string|array]').wrap(function(name, pets) {
 			return [name, pets];
 		});
 
