@@ -267,6 +267,20 @@ function Argy(args) {
 	};
 	// }}}
 
+	/**
+	* Return a wrapped closure function which will take arguments and rewrite them to match the spec
+	* @param {function} callback The callback to invoke if the spec is matched
+	* @return {function} The wrapped function closure
+	*/
+	self.wrap = function(callback) {
+		return function() {
+			self.args = arguments;
+			var funcArgs = self.parse();
+
+			return callback.apply(this, funcArgs);
+		};
+	};
+
 	return self;
 }
 

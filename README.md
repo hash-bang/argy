@@ -6,6 +6,7 @@ Argy can be used in multiple ways:
 
 * Matching against a argument form with ifForm() / ifFormElse()
 * Matching against a stated pattern with as()
+* Wrapping a function with wrap()
 
 
 API
@@ -47,9 +48,34 @@ as()
 ====
 The `as()` method is a shorthand version of the `add()` / `required()` / `optional()` methods.
 
-'As' syntax resembles a string (either space seperated or CSV) of types with optional types in square brackets:
+'As' syntax resembles a string (either space separated or CSV) of types with optional types in square brackets:
 
 ```javascript
-argy(arguments).as('number').into(myNumber) // Require a single number
-argy(arguments).as('*').into(myNumber) // Require any type
+// Require a single number
+argy(arguments).as('number').into(myNumber)
+
+// Require any type
+argy(arguments).as('*').into(myNumber)
+
+// Require a string followed by an optional number
+argy(arguments).as('string [number]').into(myNumber)
+
+// Require a number preceeded by an optional string (reverse of above with args expanding from right)
+argy(arguments).as('[string] number').into(myNumber)
+```
+
+
+Wrap()
+======
+Factory function which returns a wrapped function where the function arguments will be rearranged into the correct order.
+
+This function provides a convenient way to specify the different specifications of arguments (using the `.as()`, `.add()` / `.required()` / `.optional` methods), then rewriting the args so the arguments are dependable.
+
+```javascript
+// Apply a wrapper to a new function
+var myFunc = argy.wrap('[string] number function', function(a, b, c) {
+	// 'a' will be either undefined or a string
+	// 'b' will always be a number
+	// 'c' will always be a function
+});
 ```
