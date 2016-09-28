@@ -19,7 +19,7 @@ describe('argy().getType()', function() {
 
 describe('argy().isType()', function() {
 
-	it('should identify types', function() {
+	it('should identify single types', function() {
 		expect(argy().isType(function() { }, 'function')).to.be.true;
 		expect(argy().isType(123, 'number')).to.be.true;
 		expect(argy().isType('abc', 'string')).to.be.true;
@@ -28,6 +28,17 @@ describe('argy().isType()', function() {
 		expect(argy().isType([1,2,3], 'array')).to.be.true;
 		expect(argy().isType(null, 'null')).to.be.true;
 		expect(argy().isType(undefined, 'undefined')).to.be.true;
+	});
+
+	it('should identify arrays of types', function() {
+		expect(argy().isType(function() { }, ['string', 'function'])).to.be.true;
+		expect(argy().isType(123, ['number', 'string'])).to.be.true;
+		expect(argy().isType('abc', ['string'])).to.be.true;
+		expect(argy().isType(new Date, ['date', 'function'])).to.be.true;
+		expect(argy().isType({foo: 'foo'}, ['object', 'undefined'])).to.be.true;
+		expect(argy().isType([1,2,3], ['array', 'object'])).to.be.true;
+		expect(argy().isType(null, ['null', 'boolean', 'undefined'])).to.be.true;
+		expect(argy().isType(undefined, ['null', 'undefined'])).to.be.true;
 	});
 
 });

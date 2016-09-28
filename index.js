@@ -214,11 +214,16 @@ function Argy(args) {
 	/**
 	* Convenience function to compare an incoming variable with a return of getType()
 	* @param {mixed} arg The variable being analysed
-	* @param {string} typeCompare The return of getType to compare to
+	* @param {string|array} typeCompare The return of getType to compare to. If an array is passed this function will return true if the type is any of its contents
 	* @return {boolean} Boolean if arg is of the typeCompare type
 	*/
 	self.isType = function(arg, typeCompare) {
-		return self.getType(arg) == typeCompare;
+		if (self.getType(typeCompare) == 'array') {
+			var isType = self.getType(arg);
+			return typeCompare.some(function(t) { return t == isType });
+		} else {
+			return self.getType(arg) == typeCompare;
+		}
 	};
 
 	// isForm() / isFormElse() {{{
