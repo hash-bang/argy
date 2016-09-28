@@ -1,5 +1,3 @@
-var _ = require('lodash');
-
 // Main object {{{
 function Argy(args) {
 	var self = this;
@@ -171,9 +169,9 @@ function Argy(args) {
 		if (!self.computedForm) self.computedForm = Argy.getForm(self.args);
 
 		if (
-			(typeof form == 'string' && form == self.computedForm) // Simple single rule match
+			(Argy.isType(form, 'string') && form == self.computedForm) // Simple single rule match
 			||
-			(Argy.getType(form) == 'array' && form.some(match => self.computedForm == match)) // Any item in array rule match
+			(Argy.isType(form, 'array') && form.some(match => self.computedForm == match)) // Any item in array rule match
 		) {
 			self.matchedForm = true;
 			callback.apply(this, self.args);
@@ -191,7 +189,7 @@ function Argy(args) {
 	* @see ifForm()
 	*/
 	self.ifFormElse = function(callback) {
-		if (!self.matchedForm && _.isFunction(callback)) callback.apply(this, self.args);
+		if (!self.matchedForm && Argy.isType(callback, 'function')) callback.apply(this, self.args);
 		return self;
 	};
 	// }}}
