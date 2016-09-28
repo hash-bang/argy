@@ -143,14 +143,6 @@ function Argy(args) {
 	};
 
 
-	/**
-	* Cached string of the arguments object run via getForm()
-	* This is to prevent multiple scans of the arg object when being used by a function that hits it a lot such as ifForm()
-	* @var {string}
-	* @see ifForm()
-	*/
-	self.computedForm = undefined;
-
 	// isForm() / isFormElse() {{{
 	/**
 	* Whether any ifForm() rule has matched in this object so far
@@ -164,17 +156,27 @@ function Argy(args) {
 	* If the argument form resembles the one given the callback is called
 	* @param {string} form The form to match
 	* @param {function} callback The callback to call if the form matches
+	* @param {boolean} [allowDupes=false] Allow this rule to also run (a duplicate) even if a previous rule matched
 	* @return {Object} this chainable object
 	* @see GetForm()
 	* @see ifFormElse()
 	*/
-	self.ifForm = function(form, callback) {
-		if (!self.computedForm) self.computedForm = Argy.getForm(self.args);
-
+	self.ifForm = function(forms, callback, allowDupes) {
 		if (
-			(Argy.isType(form, 'string') && form == self.computedForm) // Simple single rule match
-			||
-			(Argy.isType(form, 'array') && form.some(match => self.computedForm == match)) // Any item in array rule match
+			(!self.matchedForm || allowDupes) &&
+			(Argy.isType(forms, 'array') ? forms : [forms])
+				.some(function(form) {
+					var formSplit = form.split(/[\s,]+/);
+
+					return (
+						self.args.length == formSplit.length &&
+						formSplit.every(function(type, i) {
+							debugger;
+							// Compare the expression against the argument (if its got a "|" character split it into an array beforehand)
+							return self.args.hasOwnProperty(i) && Argy.isType(self.args[i], /\|/.test(type) ? type.split('|') : type);
+						})
+					);
+				})
 		) {
 			self.matchedForm = true;
 			callback.apply(this, self.args);
@@ -186,13 +188,13 @@ function Argy(args) {
 
 	/**
 	* Bind a non-matching ifForm condition that is fired if none of the preceding conditions were satisfied
-	* @param {function} callback The callback to call if the form matches
+	* @param {function} callback The callback to call if no other form matches - the first argument will be the form pattern followed by all other arguments
 	* @return {Object} this chainable object
 	* @see GetForm()
 	* @see ifForm()
 	*/
 	self.ifFormElse = function(callback) {
-		if (!self.matchedForm && Argy.isType(callback, 'function')) callback.apply(this, self.args);
+		if (!self.matchedForm && Argy.isType(callback, 'function')) callback.apply(this, [self.getForm()].concat(self.args));
 		return self;
 	};
 	// }}}
@@ -210,6 +212,25 @@ function Argy(args) {
 			return callback.apply(this, funcArgs);
 		};
 	};
+
+	// Utility functions {{{
+	/**
+	* Cached string of the arguments object
+	* This is to prevent multiple scans of the arg object when being used by a function that hits it a lot such as getForm()
+	* @var {string}
+	* @see ifForm()
+	*/
+	self.computedForm = undefined;
+
+	/**
+	* Return the parsed version of the form for this object instance
+	* @see getForm()
+	*/
+	self.getForm = function() {
+		if (!self.computedForm) self.computedForm = Argy.getForm(self.args);
+		return self.computedForm;
+	};
+	// }}}
 
 	return self;
 }

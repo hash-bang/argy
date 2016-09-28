@@ -9,7 +9,7 @@ describe('argy - ifForm()', function() {
 
 			argy(arguments)
 				.ifForm('string', name => id = name)
-				.ifForm('string,number', (name, age) => id = name + ' (' + age + ')')
+				.ifForm('string number', (name, age) => id = name + ' (' + age + ')')
 				.ifForm('number', age => id = 'Unknown (' + age + ')')
 				.ifFormElse(() => id = 'Unknown')
 
@@ -27,8 +27,8 @@ describe('argy - ifForm()', function() {
 			var out;
 			argy(arguments)
 				.ifForm('string', name => out = name + ' has no pets')
-				.ifForm('string,string', (name,pet) => out = name + ' has a pet called ' + pet)
-				.ifForm('string,array', (name, pets) => out = name + ' has pets called ' + pets.join(', '))
+				.ifForm('string string', (name,pet) => out = name + ' has a pet called ' + pet)
+				.ifForm('string array', (name, pets) => out = name + ' has pets called ' + pets.join(', '))
 				.ifForm('array', pets => out = 'An unknown owner has the pets ' + pets.join(', '))
 
 			return out;
@@ -55,6 +55,55 @@ describe('argy - ifForm()', function() {
 		expect(logger(123)).to.equal(123);
 		expect(logger({foo: 'fooVal'})).to.equal('[Object]');
 		expect(logger(new Date)).to.equal('[Unknown]');
+	});
+
+	it('should process the OR syntax', function() {
+		var logger = function() {
+			var out;
+			argy(arguments)
+				.ifForm('string|number', text => out = text)
+				.ifForm('object', text => out = '[Object]')
+				.ifFormElse(() => out = '[Unknown]')
+
+			return out;
+		};
+
+		expect(logger('hello')).to.equal('hello');
+		expect(logger(123)).to.equal(123);
+		expect(logger({foo: 'fooVal'})).to.equal('[Object]');
+		expect(logger(new Date)).to.equal('[Unknown]');
+	});
+
+	it('should only run a rule once', function() {
+		var runCount = 0;
+
+		argy(['hello'])
+			.ifForm('string', function() {
+				runCount++;
+			})
+			.ifForm('string', function() {
+				runCount++;
+			})
+
+		expect(runCount).to.be.equal(1);
+	});
+
+	it('should run a rule multiple times if allowDupes=true', function() {
+		var runCount = 0;
+
+		argy(['hello'])
+			.ifForm('string', function() {
+				runCount++;
+			})
+			.ifForm('string', function() {
+				runCount++;
+			}, true)
+			.ifForm('string', function() {
+				expect.fail('running function when it shouldnt');
+				runCount++;
+			})
+
+		expect(runCount).to.be.equal(2);
 	});
 });
 

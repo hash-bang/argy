@@ -29,6 +29,10 @@ Run a callback if the form of the arguments matches a rule.
 	ifForm(String <match> | Array <matches>, callback)
 	ifFormElse(callback)
 
+Rules can be single strings or arrays. If an array is passed any rule within that array is counted as satisfying the form (an 'OR' rule).
+
+Strings can be composed of parameters seperated by spaces or commas with optional pipes (`|`) to specify multiple types: e.g. `string string|number date` indicates that the first argument should be a string, the second could be a string OR a number and the third should be a date.
+
 
 ```javascript
 // The following function tries to identify a person and their age based on optional arguments
@@ -38,7 +42,7 @@ function identify() {
 
 	argy(arguments)
 		.ifForm('string', name => id = name)
-		.ifForm('string,number', (name, age) => id = name + ' (' + age + ')')
+		.ifForm('string number', (name, age) => id = name + ' (' + age + ')')
 		.ifForm('number', age => id = 'Unknown (' + age + ')')
 		.ifFormElse(() => id = 'Unknown')
 
