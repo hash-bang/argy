@@ -1,7 +1,7 @@
 {
   "name": "argy",
   "version": "1.0.0",
-  "description": "Swiss army knife for variadic functions",
+  "description": "Swiss Army knife for variadic functions",
   "main": "index.js",
   "scripts": {
     "test": "mocha"

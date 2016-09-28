@@ -1,6 +1,6 @@
 Argy
 ====
-Zero-dependency swiss army knife for variadic functions.
+Zero-dependency Swiss Army knife for variadic functions.
 
 
 
