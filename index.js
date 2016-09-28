@@ -18,39 +18,21 @@ function Argy(args) {
 
 	self.require = self.required; // Alias
 
-	self._getMatcherFunction = function(item) {
-		switch (item) {
-			case '*': return function() { return true };
-			case 'string': return function(a) { return self.isType(a, 'string') };
-			case 'number': return function(a) { return self.isType(a, 'number') };
-			case 'boolean': return function(a) { return self.isType(a, 'boolean') };
-			case 'object': return function(a) { return self.isType(a, 'object') };
-			case 'function': return function(a) { return self.isType(a, 'function') };
-			case 'date': return function(a) { return self.isType(a, 'date') };
-			default:
-				throw new Error('Unable to determine what to do with Argy matcher of type "' + item + '"');
-		}
-	};
-
 	self.add = function(cardinality, ref, matcher) {
-		switch (cardinality) {
-			case 'required':
-				self.stack.push({
-					cardinality: 'required',
-					ref: ref,
-					matcher: self._getMatcherFunction(matcher),
-				});
-				break;
-			case 'optional':
-				self.stack.push({
-					cardinality: 'optional',
-					ref: ref,
-					matcher: self._getMatcherFunction(matcher),
-				});
-				break;
-			default: 
-				throw new Error('Unknown cardinality "' + cardinality + '" when adding argument type to Argy object');
+		if (cardinality != 'required' && cardinality != 'optional') throw new Error('Unknown cardinality "' + cardinality + '" when adding argument type to Argy object');
+
+		if (!matcher) {
+			matcher = '*';
+		} else {
+			matcher = matcher.split(/[\s\|,]+/);
 		}
+
+		self.stack.push({
+			cardinality: cardinality,
+			ref: ref,
+			matcher: function(a) { return Argy.isType(a, matcher) },
+		});
+
 		return self;
 	};
 
