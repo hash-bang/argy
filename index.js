@@ -147,23 +147,15 @@ function Argy(args) {
 	* Calculate the parse truth table to use and optionally assign a list of variable to their incomming arg values in order
 	* This is an alternate way of reading back values contrasting with the first parameter of add() / optional() / required()
 	* @param {mixed,...} arg The arguments to read back - this should approximately match the number of args in the stack any overflow values will be assigned as undefined
-	* @return {Object} this chainable object
+	* @return {array} Array of arguments determined from the stack and the incomming argument object
 	*/
 	self.parse = function(xargs) {
 		var truth = self.parseTruth();
 
 		var truthKeys = Object.keys(truth);
 		if (truthKeys.length == 0) throw new Error('Invalid function invocation');
-		// if (truthKeys.length > 1) throw new Error('Multiple matching rules for variadic function!');
 
-		var useTruth = truth[truthKeys[0]];
-
-		useTruth.values.forEach(function(ref, i) {
-			console.log('SET', i, 'TO', ref);
-			self.args[i] = ref;
-		});
-
-		return self;
+		return truth[truthKeys[0]].values;
 	};
 
 
