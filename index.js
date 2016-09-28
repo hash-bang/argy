@@ -171,7 +171,6 @@ function Argy(args) {
 					return (
 						self.args.length == formSplit.length &&
 						formSplit.every(function(type, i) {
-							debugger;
 							// Compare the expression against the argument (if its got a "|" character split it into an array beforehand)
 							return self.args.hasOwnProperty(i) && Argy.isType(self.args[i], /\|/.test(type) ? type.split('|') : type);
 						})
