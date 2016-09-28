@@ -6,28 +6,31 @@ function Argy(args) {
 
 	self.stack = [];
 
-	self.optional = function(ref, types) {
-		return self.add('optional', ref, types);
+	self.optional = function(types) {
+		return self.add('optional', types);
 	};
 
-	self.required = function(ref, types) {
-		return self.add('required', ref, types);
+	self.required = function(types) {
+		return self.add('required', types);
 	};
 
 	self.require = self.required; // Alias
 
-	self.add = function(cardinality, ref, matcher) {
+	self.add = function(cardinality, matcher) {
 		if (cardinality != 'required' && cardinality != 'optional') throw new Error('Unknown cardinality "' + cardinality + '" when adding argument type to Argy object');
 
 		if (!matcher) {
 			matcher = '*';
-		} else {
+		} else if (Argy.isType(matcher, 'string')) {
 			matcher = matcher.split(/[\s\|,]+/);
+		} else if (Argy.isType(matcher, 'array')) {
+			// Already an array - do nothing
+		} else {
+			throw new Error('Unknown matcher specification - ' + matcher);
 		}
 
 		self.stack.push({
 			cardinality: cardinality,
-			ref: ref,
 			matcher: function(a) { return Argy.isType(a, matcher) },
 		});
 
@@ -46,9 +49,9 @@ function Argy(args) {
 			.split(/[\s+,]+/)
 			.forEach(function(arg) {
 				if (/^\[.*\]$/.test(arg)) {
-					self.add('optional', null, arg.substr(1, arg.length - 2));
+					self.add('optional', arg.substr(1, arg.length - 2));
 				} else {
-					self.add('required', null, arg);
+					self.add('required', arg);
 				}
 			});
 
