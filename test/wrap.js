@@ -37,10 +37,10 @@ describe('argy.wrap() test #2', function() {
 			return [name, pets];
 		});
 
-		expect(petLister('Joe')).to.deep.equal(['Joe', []]);
-		expect(petLister('Sally', 'Felix')).to.deep.equal(['Sally', ['Felix']]);
+		expect(petLister('Joe')).to.deep.equal(['Joe', undefined]);
+		expect(petLister('Sally', 'Felix')).to.deep.equal(['Sally', 'Felix']);
 		expect(petLister('Joan', ['Glitch', 'Widget'])).to.deep.equal(['Joan', ['Glitch', 'Widget']]);
-		expect(petLister(['Rover', 'Rex'])).to.equal([undefined, ['Rover', 'Rex']]);
+		expect(petLister(['Rover', 'Rex'])).to.deep.equal([undefined, ['Rover', 'Rex']]);
 	});
 
 	it('should process basic scenario using builder syntax', function() {
@@ -51,10 +51,10 @@ describe('argy.wrap() test #2', function() {
 				return [name, pets];
 			});
 
-		expect(petLister('Joe')).to.deep.equal(['Joe', []]);
-		expect(petLister('Sally', 'Felix')).to.deep.equal(['Sally', ['Felix']]);
+		expect(petLister('Joe')).to.deep.equal(['Joe', undefined]);
+		expect(petLister('Sally', 'Felix')).to.deep.equal(['Sally', 'Felix']);
 		expect(petLister('Joan', ['Glitch', 'Widget'])).to.deep.equal(['Joan', ['Glitch', 'Widget']]);
-		expect(petLister(['Rover', 'Rex'])).to.equal([undefined, ['Rover', 'Rex']]);
+		expect(petLister(['Rover', 'Rex'])).to.deep.equal([undefined, ['Rover', 'Rex']]);
 	});
 
 });

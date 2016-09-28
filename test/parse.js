@@ -16,7 +16,7 @@ describe('argy.parse()', function() {
 	});
 
 	it('should accept optional arguments correctly', function() {
-		expect(argy(['foo', undefined]).as('string [string]').parse()).to.be.deep.equal(['foo']);
+		expect(argy(['foo', undefined]).as('string [string]').parse()).to.be.deep.equal(['foo', undefined, undefined]);
 		expect(argy(['foo', undefined, 123]).as('string [string] [number]').parse()).to.be.deep.equal(['foo', undefined, 123]);
 	});
 

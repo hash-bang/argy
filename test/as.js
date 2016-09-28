@@ -8,7 +8,6 @@ describe('argy.as()', function() {
 		
 		expect(stack).to.have.length(1);
 		expect(stack[0]).to.have.property('cardinality', 'required');
-		expect(stack[0]).to.have.property('ref', null);
 	});
 
 	it('should parse an optional one arg', function() {
@@ -16,7 +15,6 @@ describe('argy.as()', function() {
 		
 		expect(stack).to.have.length(1);
 		expect(stack[0]).to.have.property('cardinality', 'optional');
-		expect(stack[0]).to.have.property('ref', null);
 	});
 
 	it('should parse complex strings', function() {
