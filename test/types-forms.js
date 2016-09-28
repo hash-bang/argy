@@ -1,0 +1,43 @@
+var argy = require('..');
+var expect = require('chai').expect;
+
+describe('argy().getType()', function() {
+
+	it('should recognise types', function() {
+		expect(argy().getType(function() { })).to.equal('function');
+		expect(argy().getType(123)).to.equal('number');
+		expect(argy().getType('abc')).to.equal('string');
+		expect(argy().getType(new Date)).to.equal('date');
+		expect(argy().getType({foo: 'foo'})).to.equal('object');
+		expect(argy().getType([1,2,3])).to.equal('array');
+		expect(argy().getType(null)).to.equal('null');
+		expect(argy().getType(undefined)).to.equal('undefined');
+	});
+
+});
+
+
+describe('argy().isType()', function() {
+
+	it('should identify types', function() {
+		expect(argy().isType(function() { }, 'function')).to.be.true;
+		expect(argy().isType(123, 'number')).to.be.true;
+		expect(argy().isType('abc', 'string')).to.be.true;
+		expect(argy().isType(new Date, 'date')).to.be.true;
+		expect(argy().isType({foo: 'foo'}, 'object')).to.be.true;
+		expect(argy().isType([1,2,3], 'array')).to.be.true;
+		expect(argy().isType(null, 'null')).to.be.true;
+		expect(argy().isType(undefined, 'undefined')).to.be.true;
+	});
+
+});
+
+
+describe('argy().getForm()', function() {
+
+	it('should recognise compound types', function() {
+		expect(argy().getForm([undefined,undefined])).to.equal('');
+		expect(argy().getForm([123,'123', function() { return 123 },null])).to.equal('number,string,function,null');
+	});
+
+});
