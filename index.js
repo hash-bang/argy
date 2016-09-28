@@ -100,10 +100,10 @@ function Argy(args) {
 			var stackPointer = 0;
 			var argPointer = 0;
 			var argsValid = true;
-			while (argPointer < self.args.length - 1) {
+			while (argPointer < self.args.length) {
 				// Is undefined? {{{
 				if (self.args[argPointer] === undefined) {
-					if (self.args[argPointer].cardinality == 'required') {
+					if (self.stack[stackPointer] && self.stack[stackPointer].cardinality == 'required') {
 						argsValid = false;
 						break;
 					} else {
@@ -114,7 +114,7 @@ function Argy(args) {
 				// }}}
 
 				// Satisfies matcher? {{{
-				if (self.stack[stackPointer].matcher.call(self, self.args[argPointer])) {
+				if (!self.stack[stackPointer] || self.stack[stackPointer].matcher.call(self, self.args[argPointer])) {
 					argValues.push(self.args[argPointer++]);
 					stackPointer++;
 				} else if (self.stack[stackPointer].cardinality == 'required') {
