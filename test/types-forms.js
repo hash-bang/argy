@@ -90,6 +90,12 @@ describe('argy().isType() - meta types', function() {
 		expect(argy.isType(undefined, 'scalar')).to.be.false;
 	});
 
+	it('should identify callback values', function() {
+		expect(argy.isType(function() { }, 'function')).to.be.true;
+		expect(argy.isType(function() { }, 'callback')).to.be.true;
+		expect(argy.isType(function() { }, 'cb')).to.be.true;
+	});
+
 });
 
 

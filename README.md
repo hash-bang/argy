@@ -290,3 +290,4 @@ In addition to the types returned by `getType()` this function also supports the
 | `scalar` / `basic` | Match any number, string or boolean      |
 | `ok` / `truey`     | Match any non-null or non-undefined type |
 | `notok` / `falsy`  | Match any null or undefined type         |
+| `callback` / `cb`  | Aliases of 'function'                    |

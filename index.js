@@ -308,6 +308,7 @@ module.exports.getType = Argy.getType = function(arg) {
 * 	- 'scalar' / 'basic' = Any number / string / boolean type
 *	- 'ok' / 'truey' = Any value that equates to a truey approximation
 *	- 'notok' / 'falsy' = Any value that equates to a falsy approximation
+* 	- 'callback' / 'cb' = Aliases of 'function'
 *
 * @param {mixed} arg The variable being analysed
 * @param {string|array} typeCompare The return of getType to compare to. If an array is passed this function will return true if the type is any of its contents. All values are automatically lower cased
@@ -333,6 +334,9 @@ module.exports.isType = Argy.isType = function(arg, typeCompare) {
 			case 'notok':
 			case 'falsy':
 				return (gotType == 'null' || gotType == 'undefined');
+			case 'callback':
+			case 'cb':
+				return (gotType == 'function');
 			default:
 				return gotType == comparitor;
 		}
