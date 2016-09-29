@@ -244,9 +244,9 @@ module.exports = function(args) {
 * Provide a shorthand version of `as` that instanciates the object
 * @see as()
 */
-module.exports.as = Argy.as = function(spec) {
-	var newArgy = argy();
-	argy.as(spec);
+module.exports.as = function(spec) {
+	var newArgy = new Argy();
+	newArgy.as(spec);
 	return newArgy;
 
 };

@@ -4,21 +4,21 @@ var expect = require('chai').expect;
 describe('argy.as()', function() {
 
 	it('should parse one arg', function() {
-		var stack = argy().as('*').stack;
+		var stack = argy.as('*').stack;
 		
 		expect(stack).to.have.length(1);
 		expect(stack[0]).to.have.property('cardinality', 'required');
 	});
 
 	it('should parse an optional one arg', function() {
-		var stack = argy().as('[*]').stack;
+		var stack = argy.as('[*]').stack;
 		
 		expect(stack).to.have.length(1);
 		expect(stack[0]).to.have.property('cardinality', 'optional');
 	});
 
 	it('should parse complex strings', function() {
-		var stack = argy().as('string number [function] [string] number').stack;
+		var stack = argy.as('string number [function] [string] number').stack;
 		
 		expect(stack).to.have.length(5);
 
