@@ -74,6 +74,20 @@ describe('argy - ifForm()', function() {
 		expect(logger(new Date)).to.equal('[Unknown]');
 	});
 
+	it('should support blank forms', function() {
+		var runCount = 0;
+
+		argy()
+			.ifForm('', function() {
+				runCount++;
+			})
+			.ifForm('', function() {
+				runCount++;
+			}, true);
+
+		expect(runCount).to.be.equal(2);
+	});
+
 	it('should only run a rule once', function() {
 		var runCount = 0;
 

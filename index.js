@@ -167,6 +167,7 @@ function Argy(args) {
 			(Argy.isType(forms, 'array') ? forms : [forms])
 				.some(function(form) {
 					var formSplit = form.split(/[\s,]+/);
+					if (formSplit.length == 1 && formSplit[0] == '') formSplit = []; // Special case for empty forms
 
 					return (
 						self.args.length == formSplit.length &&
