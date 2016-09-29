@@ -235,7 +235,22 @@ function Argy(args) {
 }
 // }}}
 
+module.exports = function(args) {
+	return new Argy(args);
+};
+
 // Utility functions {{{
+/**
+* Provide a shorthand version of `as` that instanciates the object
+* @see as()
+*/
+module.exports.as = Argy.as = function(spec) {
+	var newArgy = argy();
+	argy.as(spec);
+	return newArgy;
+
+};
+
 /**
 * Examines an argument stack and returns all passed arguments as a CSV
 * e.g.
@@ -247,7 +262,7 @@ function Argy(args) {
 * @param {object} args The special JavaScript 'arguments' object
 * @return {string} CSV of all passed arguments
 */
-Argy.getForm = function(args) {
+module.exports.getForm = Argy.getForm = function(args) {
 	var i = 0;
 	var out = [];
 	while(1) {
@@ -265,7 +280,7 @@ Argy.getForm = function(args) {
 * @param {mixed} arg The variable to analyse
 * @return {string} The type of the variable as a lower case string
 */
-Argy.getType = function(arg) {
+module.exports.getType = Argy.getType = function(arg) {
 	var argType = typeof arg;
 	if (argType == 'undefined') {
 		return 'undefined';
@@ -293,7 +308,7 @@ Argy.getType = function(arg) {
 * @param {string|array} typeCompare The return of getType to compare to. If an array is passed this function will return true if the type is any of its contents. All values are automatically lower cased
 * @return {boolean} Boolean if arg is of the typeCompare type
 */
-Argy.isType = function(arg, typeCompare) {
+module.exports.isType = Argy.isType = function(arg, typeCompare) {
 	if (Argy.getType(typeCompare) != 'array') typeCompare = [typeCompare]; // Force comparitor to be an array
 
 	var gotType = Argy.getType(arg);
@@ -320,5 +335,3 @@ Argy.isType = function(arg, typeCompare) {
 	});
 };
 // }}}
-
-module.exports = Argy;
