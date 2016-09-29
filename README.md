@@ -95,8 +95,9 @@ Argy operates by selecting two paths - how you specify the function standard and
 
 1. The specification specifier - choose either the [as](#as) or [builder](#builder) specification setups. If you want different specifications to do different things use [ifForm](#ifform).
 	- **as syntax** - Use a string to specify what a function can accept (e.g. `argy().as('string [number]')`)
+	- **single function syntax** - An alternative way to specify `as` syntax is to pass two parameters to argy (e.g. `argy('[string] [number]', function(name, number) { ... })`)
 	- **builder syntax** - Use an object based declaration to specify the function standard (e.g. `argy().required('string').optional('number')`)
-	* **ifForm syntax** - Specify different callbacks to run for different forms (e.g. `argy().ifForm('string', funcFoo).ifForm('number', funcBar')`)
+	- **ifForm syntax** - Specify different callbacks to run for different forms (e.g. `argy().ifForm('string', funcFoo).ifForm('number', funcBar')`)
 
 2. The output handler - choose either the [wrap](#wrap) or [parse](#parse) APIs
 	- **wrap** - Return a function that will be called by Argy when the specification is satisfied (e.g. `argy().as('... your spec ...').wrap(function(a, b, c) { // Your function // })`)
@@ -222,6 +223,17 @@ This function provides a convenient way to specify the different specifications 
 ```javascript
 // Apply a wrapper to a new function
 var myFunc = argy.as('[string] number function').wrap(function(a, b, c) {
+	// 'a' will be either undefined or a string
+	// 'b' will always be a number
+	// 'c' will always be a function
+});
+```
+
+It is also possible to pass two parameters to Argy to replicate the same functionality:
+
+```javascript
+// Apply a wrapper to a new function
+var myFunc = argy('[string] number function', function(a, b, c) {
 	// 'a' will be either undefined or a string
 	// 'b' will always be a number
 	// 'c' will always be a function

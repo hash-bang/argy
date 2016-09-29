@@ -237,7 +237,13 @@ function Argy(args) {
 // }}}
 
 module.exports = function(args) {
-	return new Argy(args);
+	if (Argy.getForm(arguments) == 'string function') { // Called as argy(As-Syntax, Callback)
+		return (new Argy())
+			.as(arguments[0])
+			.wrap(arguments[1]);
+	} else { // Called as argy(arguments)
+		return new Argy(args);
+	}
 };
 
 // Utility functions {{{
@@ -246,10 +252,8 @@ module.exports = function(args) {
 * @see as()
 */
 module.exports.as = function(spec) {
-	var newArgy = new Argy();
-	newArgy.as(spec);
-	return newArgy;
-
+	return (new Argy())
+		.as(spec);
 };
 
 /**
