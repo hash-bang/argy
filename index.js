@@ -305,7 +305,7 @@ module.exports.getType = Argy.getType = function(arg) {
 *
 * Additional types compared:
 * 	- '*' / 'any' = Anything (will always return true)
-* 	- 'scalar' / 'basic' = Any number / string type
+* 	- 'scalar' / 'basic' = Any number / string / boolean type
 *	- 'ok' / 'truey' = Any value that equates to a truey approximation
 *	- 'notok' / 'falsy' = Any value that equates to a falsy approximation
 *
@@ -326,7 +326,7 @@ module.exports.isType = Argy.isType = function(arg, typeCompare) {
 				return true;
 			case 'scalar':
 			case 'basic':
-				return (gotType == 'number' || gotType == 'string');
+				return (gotType == 'number' || gotType == 'string' || gotType == 'boolean');
 			case 'ok':
 			case 'truey':
 				return (gotType != 'null' && gotType != 'undefined');
