@@ -229,3 +229,52 @@ var myFunc = argy.as('[string] number function').wrap(function(a, b, c) {
 ```
 
 See the [test/wrap.js](tests) for more complex examples.
+
+
+Utility APIs
+============
+
+Argy.as()
+---------
+Shortcut function to create a new Argy instance without specifying any parameters.
+This is functionally identical to `argy().as()`
+
+
+Argy.getForm(arguments)
+-----------------------
+Returns a space separated string of the arguments object where each item is run via `getType`.
+
+```javascript
+function myFunc() {
+	argy.getForm(arguments) // => "string number date"
+};
+myFunc('hello', 123, new Date);
+```
+
+
+Argy.getType(variable)
+----------------------
+Returns the lower-case type specification of a variable.
+
+```javascript
+argy.getType('hello') // => 'string'
+argy.getType([1,2,3]) // => 'array'
+argy.getType({foo: 'fooValue'}) // => 'object'
+argy.getType(new Date) // => 'date'
+argy.getType(function() {}) // => 'function'
+```
+
+
+Argy.isType(variable, types)
+----------------------------
+Compares a single variable against a type or array of types.
+If `types` is an array this function will return true if *any* of the array items match.
+
+In addition to the types returned by `getType()` this function also supports the following meta-comparators:
+
+| Type               | Description                              |
+|--------------------|------------------------------------------|
+| `*` / `any`        | Always returns true                      |
+| `scalar` / `basic` | Match any number or string type          |
+| `ok` / `truey`     | Match any non-null or non-undefined type |
+| `notok` / `falsy`  | Match any null or undefined type         |
