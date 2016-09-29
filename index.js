@@ -253,12 +253,12 @@ module.exports.as = function(spec) {
 };
 
 /**
-* Examines an argument stack and returns all passed arguments as a CSV
+* Examines an argument stack and returns all passed arguments as a space delimited string
 * e.g.
-*	function test () { getOverload(arguments) };
-*	test('hello', 'world') // 'string,string'
-*	test(function() {}, 1) // 'function,number'
-*	test('hello', 123, {foo: 'bar'}, ['baz'], [{quz: 'quzValue'}, {quuz: 'quuzValue'}]) // 'string,number,object,array,collection'
+*	function test () { argy.getForm(arguments) };
+*	test('hello', 'world') // 'string string'
+*	test(function() {}, 1) // 'function number'
+*	test('hello', 123, {foo: 'bar'}, ['baz'], [{quz: 'quzValue'}, {quuz: 'quuzValue'}]) // 'string number object array collection'
 *
 * @param {object} args The special JavaScript 'arguments' object
 * @return {string} CSV of all passed arguments
@@ -272,7 +272,7 @@ module.exports.getForm = Argy.getForm = function(args) {
 		out.push(argType);
 		i++;
 	}
-	return out.toString();
+	return out.join(' ');
 };
 
 /**

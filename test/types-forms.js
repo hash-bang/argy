@@ -97,7 +97,7 @@ describe('argy().getForm()', function() {
 
 	it('should recognise compound types', function() {
 		expect(argy.getForm([undefined,undefined])).to.equal('');
-		expect(argy.getForm([123,'123', function() { return 123 },null])).to.equal('number,string,function,null');
+		expect(argy.getForm([123,'123', function() { return 123 },null])).to.equal('number string function null');
 	});
 
 });
