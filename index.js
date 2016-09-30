@@ -16,7 +16,7 @@ function Argy(args) {
 
 	self.require = self.required; // Alias
 
-	self.add = function(cardinality, matcher) {
+	self.add = function(cardinality, matcher, cast) {
 		if (cardinality != 'required' && cardinality != 'optional') throw new Error('Unknown cardinality "' + cardinality + '" when adding argument type to Argy object');
 
 		if (!matcher) {
@@ -33,6 +33,7 @@ function Argy(args) {
 			cardinality: cardinality,
 			matcher: function(a) { return Argy.isType(a, matcher) },
 			matcherString: matcher,
+			cast: cast,
 		});
 
 		return self;
@@ -49,11 +50,13 @@ function Argy(args) {
 		pattern
 			.split(/[\s+,]+/)
 			.forEach(function(arg) {
-				if (/^\[.*\]$/.test(arg)) {
-					self.add('optional', arg.substr(1, arg.length - 2));
-				} else {
-					self.add('required', arg);
-				}
+				var parsed = /^(\[)?(.+?)(>.+?)?(\])?$/.exec(arg);
+				if (!parsed) throw new Error('Invalid "as" syntax for specifier "' + arg + '"');
+				self.add(
+					parsed[1] && parsed[4] ? 'optional' : 'required',
+					parsed[2],
+					(parsed[3] ? parsed[3].substr(1) : false)
+				);
 			});
 
 		return this;
@@ -71,7 +74,7 @@ function Argy(args) {
 				return (
 					(item.cardinality == 'optional' ? '[' : '') +
 					(
-						Argy.isType(item.matcherString, 'array') && item.matcherString.length > 1 ? item.matcherString.join('|') 
+						Argy.isType(item.matcherString, 'array') && item.matcherString.length > 1 ? item.matcherString.join('|')
 							: Argy.isType(item.matcherString.length, 'array') ? item.matcherString[0]
 							: item.matcherString
 					) +
@@ -163,7 +166,9 @@ function Argy(args) {
 		var truthKeys = Object.keys(truth);
 		if (truthKeys.length == 0) throw new Error('Invalid function invocation. Function expects form "' + self.getSpecString() + '" but was called as "' + self.getForm() + '"');
 
-		return truth[truthKeys[0]].values;
+		return truth[truthKeys[0]].values.map(function(val, i) {
+			return self.stack[i] && self.stack[i].cast ? Argy.cast(val, self.stack[i].cast) : val;
+		});
 	};
 
 
@@ -366,5 +371,28 @@ module.exports.isType = Argy.isType = function(arg, typeCompare) {
 		}
 		return t == isType
 	});
+};
+
+/**
+* Convert from an input type to an output type
+* Since some types are not translatable the functionality to convert between types is limited
+*/
+module.exports.cast = Argy.cast = function(input, outType) {
+	var inType = Argy.getType(input);
+	var isScalar = Argy.isType(input, 'scalar');
+
+	if (inType == outType) { // Nothing to do
+		return input;
+	} else if (outType == 'number' && inType == 'string') {
+		return parseFloat(input);
+	} else if (outType == 'string' && inType == 'number') {
+		return input.toString();
+	} else if (outType == 'boolean' && isScalar) {
+		return !! input;
+	} else if (outType == 'array' && isScalar) {
+		return [input];
+	} else {
+		throw new Error('Cannot cast type "' + inType + '" to "' + outType + '" for value "' + input + '" as the types are incompatible');
+	}
 };
 // }}}

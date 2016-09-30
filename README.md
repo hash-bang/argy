@@ -104,6 +104,26 @@ Argy operates by selecting two paths - how you specify the function standard and
 	- **parse** - Return an array of extracted parameters (e.g. `argy().as('... your spec ...').parse()`). This method is useful if you have [destructuring](https://hacks.mozilla.org/2015/05/es6-in-depth-destructuring/) available in your parser.
 
 
+Casting
+-------
+Argy also supports variable casting. This forces an incomming value to be of a certain type. Since some types are not translatable the functionality to convert between types is limited but this can be helpful when requiring an input to be of a certain style. Casting is specified in the as syntax using the greater-than operator after the type e.g. `scalar>string` will force any scalar input into the string type.
+
+For more details see the (Argy.cast()](#argycast) function.
+
+```javascript
+argy('scalar>string', function(id) {
+	// `id` will ALWAYS be a string type even if it was passed as a number
+});
+
+argy('scalar|array>array', function(id) {
+	// `id` will ALWAYS be an array of values, even if it was passed as a single scalar
+});
+
+argy('*>boolean', function(enable) {
+	// `enable` will always be evaluated as a boolean
+});
+```
+
 
 Specification API
 =================
@@ -271,6 +291,21 @@ Argy.as()
 ---------
 Shortcut function to create a new Argy instance without specifying any parameters.
 This is functionally identical to `argy().as()`
+
+
+Argy.cast()
+-----------
+Attempt to convert an input type into an output type. Since some types are not translatable the functionality to convert between types is limited.
+
+```javascript
+argy.cast(123, 'string') => '123'
+argy.cast('foo', 'number') => 0
+argy.cast('456', 'number') => 456
+argy.cast('foo', 'array') => ['foo']
+argy.cast(123, 'array') => [123]
+```
+
+See the [test/cast.js](tests) for more complex examples.
 
 
 Argy.getForm(arguments)
