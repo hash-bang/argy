@@ -108,7 +108,7 @@ Casting
 -------
 Argy also supports variable casting. This forces an incomming value to be of a certain type. Since some types are not translatable the functionality to convert between types is limited but this can be helpful when requiring an input to be of a certain style. Casting is specified in the as syntax using the greater-than operator after the type e.g. `scalar>string` will force any scalar input into the string type.
 
-For more details see the (Argy.cast()](#argycast) function.
+For more details see the [Argy.cast()](#argycast) function.
 
 ```javascript
 argy('scalar>string', function(id) {
