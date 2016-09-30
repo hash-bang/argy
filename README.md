@@ -246,6 +246,27 @@ See the [test/wrap.js](tests) for more complex examples.
 Utility APIs
 ============
 
+argy().getSpecString()
+----------------------
+Return the compiled version of a specification as a space seperated string.
+This is the opposite function to `as()`.
+
+```javascript
+// Get the specification syntax from an Argy instance compiled with 'as()'
+argy()
+	.as('string [date] callback')
+	.getSpecString() // => 'string [date] callback'
+
+
+// Get the specification syntax from an Argy instance compiled using the builder syntax
+argy()
+	.required('string')
+	.optional('date')
+	.required('callback')
+	.getSpecString() // => 'string [date] callback');
+```
+
+
 Argy.as()
 ---------
 Shortcut function to create a new Argy instance without specifying any parameters.
