@@ -157,11 +157,11 @@ function Argy(args) {
 	* @param {mixed,...} arg The arguments to read back - this should approximately match the number of args in the stack any overflow values will be assigned as undefined
 	* @return {array} Array of arguments determined from the stack and the incomming argument object
 	*/
-	self.parse = function(xargs) {
+	self.parse = function() {
 		var truth = self.parseTruth();
 
 		var truthKeys = Object.keys(truth);
-		if (truthKeys.length == 0) throw new Error('Invalid function invocation');
+		if (truthKeys.length == 0) throw new Error('Invalid function invocation. Function expects form "' + self.getSpecString() + '" but was called as "' + self.getForm() + '"');
 
 		return truth[truthKeys[0]].values;
 	};

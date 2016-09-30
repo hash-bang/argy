@@ -79,3 +79,19 @@ describe('argy.wrap() test #2', function() {
 	});
 
 });
+
+describe('argy.wrap() - errors', function() {
+
+	it('should raise an error when called wrong', function() {
+		expect(function() {
+			var myFunc = argy('string [number]', function(name, age) {});
+			myFunc(56);
+		}).to.throw('Invalid function invocation. Function expects form "string [number]" but was called as "number"');
+
+		expect(function() {
+			var myFunc = argy('string [number|date] callback', function(name, age) {});
+			myFunc('hello', new Date(), 123);
+		}).to.throw('Invalid function invocation. Function expects form "string [number|date] callback" but was called as "string date number"');
+	});
+
+});
