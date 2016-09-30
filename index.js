@@ -32,6 +32,7 @@ function Argy(args) {
 		self.stack.push({
 			cardinality: cardinality,
 			matcher: function(a) { return Argy.isType(a, matcher) },
+			matcherString: matcher,
 		});
 
 		return self;
@@ -57,6 +58,29 @@ function Argy(args) {
 
 		return this;
 	};
+
+
+	/**
+	* Return the specfication form as a string
+	* This is the opposite function to as()
+	* @return {string} The specification as a string
+	*/
+	self.getSpecString = function() {
+		return self.stack
+			.map(function(item) {
+				return (
+					(item.cardinality == 'optional' ? '[' : '') +
+					(
+						Argy.isType(item.matcherString, 'array') && item.matcherString.length > 1 ? item.matcherString.join('|') 
+							: Argy.isType(item.matcherString.length, 'array') ? item.matcherString[0]
+							: item.matcherString
+					) +
+					(item.cardinality == 'optional' ? ']' : '')
+				);
+			})
+			.join(' ');
+	};
+
 
 	/**
 	* Compile a truth table from the current stack contents
