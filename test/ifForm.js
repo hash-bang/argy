@@ -8,10 +8,10 @@ describe('argy - ifForm()', function() {
 			var id;
 
 			argy(arguments)
-				.ifForm('string', name => id = name)
-				.ifForm('string number', (name, age) => id = name + ' (' + age + ')')
-				.ifForm('number', age => id = 'Unknown (' + age + ')')
-				.ifFormElse(() => id = 'Unknown')
+				.ifForm('string', function(name) { id = name })
+				.ifForm('string number', function(name, age) { id = name + ' (' + age + ')' })
+				.ifForm('number', function(age) { id = 'Unknown (' + age + ')' })
+				.ifFormElse(function() { id = 'Unknown' })
 
 			return id;
 		};
@@ -26,10 +26,10 @@ describe('argy - ifForm()', function() {
 		var petLister = function() {
 			var out;
 			argy(arguments)
-				.ifForm('string', name => out = name + ' has no pets')
-				.ifForm('string string', (name,pet) => out = name + ' has a pet called ' + pet)
-				.ifForm('string array', (name, pets) => out = name + ' has pets called ' + pets.join(', '))
-				.ifForm('array', pets => out = 'An unknown owner has the pets ' + pets.join(', '))
+				.ifForm('string', function(name) { out = name + ' has no pets' })
+				.ifForm('string string', function(name,pet) { out = name + ' has a pet called ' + pet })
+				.ifForm('string array', function(name, pets) { out = name + ' has pets called ' + pets.join(', ') })
+				.ifForm('array', function(pets) { out = 'An unknown owner has the pets ' + pets.join(', ') })
 
 			return out;
 		};
@@ -44,9 +44,9 @@ describe('argy - ifForm()', function() {
 		var logger = function() {
 			var out;
 			argy(arguments)
-				.ifForm(['string', 'number'], text => out = text)
-				.ifForm('object', text => out = '[Object]')
-				.ifFormElse(() => out = '[Unknown]')
+				.ifForm(['string', 'number'], function(text) { out = text })
+				.ifForm('object', function(text) { out = '[Object]' })
+				.ifFormElse(function() { out = '[Unknown]' })
 
 			return out;
 		};
@@ -61,9 +61,9 @@ describe('argy - ifForm()', function() {
 		var logger = function() {
 			var out;
 			argy(arguments)
-				.ifForm('string|number', text => out = text)
-				.ifForm('object', text => out = '[Object]')
-				.ifFormElse(() => out = '[Unknown]')
+				.ifForm('string|number', function(text) { out = text })
+				.ifForm('object', function(text) { out = '[Object]' })
+				.ifFormElse(function() { out = '[Unknown]' })
 
 			return out;
 		};

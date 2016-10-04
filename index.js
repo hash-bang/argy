@@ -99,12 +99,16 @@ function Argy(args) {
 		var filterMatchers = applyMatchers === undefined ? true : !!applyMatchers;
 
 		// Calculate the bit mask (+2^offset for every required element)
-		var mask = self.stack.reduce((total, arg, offset) => arg.cardinality == 'required' ? total + Math.pow(2, offset) : total, 0);
+		var mask = self.stack.reduce(function(total, arg, offset) {
+			return (arg.cardinality == 'required' ? total + Math.pow(2, offset) : total);
+		}, 0);
 
 		for (var i = 0; i < maxVal; i++) {
 			if (filterRequired && (i & mask) != mask) continue; // Doesn't satisfy require bitmask
 
-			var args = self.stack.map((arg, offset) => (Math.pow(2, offset) & i) > 0 ? self.stack[offset] : null)
+			var args = self.stack.map(function(arg, offset) {
+				return ((Math.pow(2, offset) & i) > 0 ? self.stack[offset] : null);
+			})
 
 			// Calculate the argValues array (the args to actually pass to the function) {{{
 			var argValues = [];
