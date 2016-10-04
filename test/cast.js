@@ -47,6 +47,14 @@ describe('argy - casting', function() {
 		expect(myFunc('foo')).to.deep.equal([['foo']]);
 		expect(myFunc('123')).to.deep.equal([['123']]);
 		expect(myFunc(123)).to.deep.equal([[123]]);
+		expect(myFunc(/foo/)).to.deep.equal([[/foo/]]);
+	});
+
+	it('should cast to a regexp', function() {
+		var myFunc = argy('*>regexp', function(a) { return [a] });
+		expect(myFunc('foo')).to.deep.equal([/foo/]);
+		expect(myFunc('123')).to.deep.equal([/123/]);
+		expect(myFunc(123)).to.deep.equal([/123/]);
 	});
 
 });

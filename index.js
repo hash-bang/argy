@@ -326,6 +326,8 @@ module.exports.getType = Argy.getType = function(arg) {
 		return 'array';
 	} else if (argType == 'object' && Object.prototype.toString.call(arg) == '[object Date]') {
 		return 'date';
+	} else if (argType == 'object' && Object.prototype.toString.call(arg) == '[object RegExp]') {
+		return 'regexp';
 	} else if (arg === null) {
 		return 'null';
 	} else {
@@ -393,8 +395,10 @@ module.exports.cast = Argy.cast = function(input, outType) {
 		return input.toString();
 	} else if (outType == 'boolean' && isScalar) {
 		return !! input;
-	} else if (outType == 'array' && isScalar) {
+	} else if (outType == 'array' && (isScalar || inType == 'regexp')) {
 		return [input];
+	} else if (outType == 'regexp' && isScalar) {
+		return new RegExp(input);
 	} else {
 		throw new Error('Cannot cast type "' + inType + '" to "' + outType + '" for value "' + input + '" as the types are incompatible');
 	}

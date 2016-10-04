@@ -12,6 +12,7 @@ describe('argy().getType()', function() {
 		expect(argy.getType([1,2,3])).to.equal('array');
 		expect(argy.getType(null)).to.equal('null');
 		expect(argy.getType(undefined)).to.equal('undefined');
+		expect(argy.getType(/hello/)).to.equal('regexp');
 	});
 
 });
@@ -28,6 +29,7 @@ describe('argy().isType()', function() {
 		expect(argy.isType([1,2,3], 'array')).to.be.true;
 		expect(argy.isType(null, 'null')).to.be.true;
 		expect(argy.isType(undefined, 'undefined')).to.be.true;
+		expect(argy.isType(/foo/, 'regexp')).to.be.true;
 	});
 
 	it('should identify arrays of types', function() {
@@ -39,6 +41,7 @@ describe('argy().isType()', function() {
 		expect(argy.isType([1,2,3], ['array', 'object'])).to.be.true;
 		expect(argy.isType(null, ['null', 'boolean', 'undefined'])).to.be.true;
 		expect(argy.isType(undefined, ['null', 'undefined'])).to.be.true;
+		expect(argy.isType(/foo/, ['object', 'regexp'])).to.be.true;
 	});
 
 });
@@ -55,6 +58,7 @@ describe('argy().isType() - meta types', function() {
 		expect(argy.isType([1,2,3], '*')).to.be.true;
 		expect(argy.isType(null, '*')).to.be.true;
 		expect(argy.isType(undefined, 'any')).to.be.true;
+		expect(argy.isType(/foo/, 'any')).to.be.true;
 	});
 
 	it('should identify truey values', function() {
@@ -66,6 +70,7 @@ describe('argy().isType() - meta types', function() {
 		expect(argy.isType([1,2,3], 'ok')).to.be.true;
 		expect(argy.isType(null, 'ok')).to.be.false;
 		expect(argy.isType(undefined, 'truey')).to.be.false;
+		expect(argy.isType(/foo/, 'truey')).to.be.true;
 	});
 
 	it('should identify falsy values', function() {
@@ -77,6 +82,7 @@ describe('argy().isType() - meta types', function() {
 		expect(argy.isType([1,2,3], 'falsy')).to.be.false;
 		expect(argy.isType(null, 'falsy')).to.be.true;
 		expect(argy.isType(undefined, 'notok')).to.be.true;
+		expect(argy.isType(/foo/, 'notok')).to.be.false;
 	});
 
 	it('should identify scalar values', function() {
@@ -88,6 +94,7 @@ describe('argy().isType() - meta types', function() {
 		expect(argy.isType([1,2,3], 'scalar')).to.be.false;
 		expect(argy.isType(null, 'scalar')).to.be.false;
 		expect(argy.isType(undefined, 'scalar')).to.be.false;
+		expect(argy.isType(/foo/, 'scalar')).to.be.false;
 	});
 
 	it('should identify callback values', function() {
@@ -103,7 +110,7 @@ describe('argy().getForm()', function() {
 
 	it('should recognise compound types', function() {
 		expect(argy.getForm([undefined,undefined])).to.equal('');
-		expect(argy.getForm([123,'123', function() { return 123 },null])).to.equal('number string function null');
+		expect(argy.getForm([123, '123', function() { return 123 }, null, /123/])).to.equal('number string function null regexp');
 	});
 
 });
